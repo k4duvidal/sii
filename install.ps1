@@ -1,21 +1,35 @@
-$BasePath = "$env:LOCALAPPDATA\SII-CR7"
-New-Item -ItemType Directory -Path $BasePath -Force | Out-Null
+# =====================================
+# SII CR7 - Som no logon do Windows
+# =====================================
 
-Copy-Item "$PSScriptRoot\sii.wav" $BasePath -Force
-Copy-Item "$PSScriptRoot\sii.ahk" $BasePath -Force
+# Caminho dinamico do audio (mesma pasta do script)
+$SoundPath = Join-Path $PSScriptRoot "sii.wav"
 
-# Baixa AutoHotkey automaticamente
-$AhkUrl = "https://www.autohotkey.com/download/ahk-install.exe"
-$AhkInstaller = "$BasePath\ahk-install.exe"
-Invoke-WebRequest $AhkUrl -OutFile $AhkInstaller
+# Verifica se o audio existe
+if (!(Test-Path $SoundPath)) {
+    Write-Host "Arquivo sii.wav nao encontrado na pasta do script."
+    Write-Host "Certifique-se de que o sii.wav esteja na mesma pasta do install.ps1"
+    Read-Host "Pressione ENTER para sair"
+    exit
+}
 
-Start-Process $AhkInstaller -Wait
+# Evento de logon do Windows
+$RegPath = "HKCU:\AppEvents\Schemes\Apps\.Default\WindowsLogon\.Current"
 
-# Inicia com o Windows
-$Startup = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup"
-Copy-Item "$BasePath\sii.ahk" $Startup -Force
+# Cria a chave se nao existir
+New-Item -Path $RegPath -Force | Out-Null
 
-Write-Host "SII instalado com sucesso!"
-Write-Host "Conecte ou desconecte um USB para testar."
+# Define o som
+Set-ItemProperty -Path $RegPath -Name "(Default)" -Value $SoundPath
 
-Read-Host
+# Garante que o som de inicializacao esteja habilitado
+Set-ItemProperty `
+    -Path "HKCU:\AppEvents\Schemes" `
+    -Name "ExcludeFromCPL" `
+    -Value 0 `
+    -Force
+
+Write-Host "SII configurado com sucesso!"
+Write-Host "O som tocara ao ligar o Windows."
+
+Read-Host "Pressione ENTER para sair"
