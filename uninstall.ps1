@@ -1,17 +1,7 @@
-# ===============================
-# SII CR7 - Desinstalador
-# ===============================
-
 $BasePath = "$env:LOCALAPPDATA\SII-CR7"
 
-# Remove tarefas
-schtasks /delete /tn "SII_USB_CONNECT" /f 2>$null
-schtasks /delete /tn "SII_USB_DISCONNECT" /f 2>$null
-
-# Remove arquivos
+Remove-Item "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\sii.ahk" -Force -ErrorAction SilentlyContinue
 Remove-Item $BasePath -Recurse -Force -ErrorAction SilentlyContinue
 
-Write-Host "Tudo removido."
-Write-Host "Windows voltou ao comportamento normal."
-
-Read-Host "Pressione ENTER para sair"
+Write-Host "SII removido. Tudo voltou ao normal."
+Read-Host
