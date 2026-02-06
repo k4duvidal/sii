@@ -1,8 +1,5 @@
-# Remove som personalizado de logon
+Remove-Item "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\sii-cr7.ps1" `
+ -Force -ErrorAction SilentlyContinue
 
-$RegPath = "HKCU:\AppEvents\Schemes\Apps\.Default\WindowsLogon\.Current"
-
-Remove-ItemProperty -Path $RegPath -Name "(Default)" -ErrorAction SilentlyContinue
-
-Write-Host "Som de logon restaurado para o padrao do Windows."
-Read-Host "Pressione ENTER para sair"
+Write-Host "SII removido."
+Read-Host
